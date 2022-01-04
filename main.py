@@ -7,9 +7,9 @@ import wandb
 import hydra
 from omegaconf import DictConfig
 
-_steps = [
+_default_steps = [
     "download",
-    "basic_cleaning",
+    "preprocessing",
     "data_check",
     "data_split",
     "train_random_forest",
@@ -33,7 +33,7 @@ def go(config: DictConfig):
 
     # Steps to execute
     steps_par = config['main']['steps']
-    active_steps = steps_par.split(",") if steps_par != "all" else _steps
+    active_steps = steps_par.split(",") if steps_par != "all" else _default_steps
 
     # Move to a temporary directory
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -45,17 +45,36 @@ def go(config: DictConfig):
                 "main",
                 parameters={
                     "sample": config["etl"]["sample"],
-                    "artifact_name": "sample.csv",
+                    "artifact_name": config["etl"]["raw_artifact_name"],
                     "artifact_type": "raw_data",
                     "artifact_description": "Raw file as downloaded"
                 },
             )
 
-        if "basic_cleaning" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+        if "eda" in active_steps:
+            # Start jupyter notebook for EDA analysis
+            _ = mlflow.run(
+                os.path.join(root_path, 'src', 'eda'),
+                "main",
+                parameters={
+                    "input_artifact": config["etl"]["raw_artifact_name"] + ":latest"
+                },
+            )
+
+        if "preprocessing" in active_steps:
+            # Preprocess the raw data and upload the updated data to W&B
+            _ = mlflow.run(
+                os.path.join(root_path, 'src', 'preprocessing'),
+                "main",
+                parameters={
+                    "input_artifact": config["etl"]["raw_artifact_name"] + ":latest",
+                    "output_artifact": config["etl"]["preprocessed_artifact_name"],
+                    "output_type": "preprocessed_data",
+                    "output_description": "Input data after preprocessing",
+                    "min_price": config["etl"]["min_price"],
+                    "max_price": config["etl"]["max_price"]
+                },
+            )
 
         if "data_check" in active_steps:
             ##################

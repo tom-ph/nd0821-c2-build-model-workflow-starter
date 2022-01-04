@@ -3,4 +3,10 @@ conda_env: conda.yml
 
 entry_points:
   main:
-    command: jupyter notebook
+    parameters:
+
+      input_artifact:
+        description: The full name of the W&B input raw artifact
+        type: string
+        
+    command: export INPUT_ARTIFACT={input_artifact} && jupyter notebook && unset INPUT_ARTIFACT
