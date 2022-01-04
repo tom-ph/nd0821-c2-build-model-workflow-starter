@@ -77,7 +77,7 @@ def go(config: DictConfig):
             )
 
         if "data_check" in active_steps:
-            # Preprocess the raw data and upload the updated data to W&B
+            # Test the data over the reference dataset
             _ = mlflow.run(
                 os.path.join(root_path, 'src', 'data_check'),
                 "main",
@@ -97,10 +97,17 @@ def go(config: DictConfig):
             )
 
         if "data_split" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+            # Split the data in train and test datasets
+            _ = mlflow.run(
+                f"{config['main']['components_repository']}/train_val_test_split",
+                "main",
+                parameters={
+                    "input": config["etl"]["preprocessed_artifact_name"] + ":latest",
+                    "test_size": config["modeling"]["test_size"],
+                    "random_seed": config["modeling"]["random_seed"],
+                    "stratify_by": config["modeling"]["stratify_by"]
+                },
+            )
 
         if "train_random_forest" in active_steps:
 
