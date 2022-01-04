@@ -17,6 +17,30 @@ entry_points:
         description: Threshold for the KL divergence test on the neighborhood group column
         type: float
 
+      lowest_latitude:
+        description: The lowest accepted latitude in the dataset
+        type: float
+
+      highest_latitude:
+        description: The highest accepted latitude in the dataset
+        type: float
+
+      lowest_longitude:
+        description: The lowest accepted longitude in the dataset
+        type: float
+
+      highest_longitude:
+        description: The highest accepted longitude in the dataset
+        type: float
+
+      min_row_count:
+        description: Minimum accepted number of rows
+        type: float
+
+      max_row_count:
+        description: Maximum accepted number of rows
+        type: float
+
       min_price:
         description: Minimum accepted price
         type: float
@@ -25,4 +49,16 @@ entry_points:
         description: Maximum accepted price
         type: float
 
-    command: "pytest . -vv --csv {csv} --ref {ref} --kl_threshold {kl_threshold} --min_price {min_price} --max_price {max_price}"
+    command: >-
+      pytest . -vv \
+              --csv {csv} \
+              --ref {ref} \
+              --kl_threshold {kl_threshold} \
+              --lowest_latitude {lowest_latitude} \
+              --highest_latitude {highest_latitude} \
+              --lowest_longitude {lowest_longitude} \
+              --highest_longitude {highest_longitude} \
+              --min_row_count {min_row_count} \
+              --max_row_count {max_row_count} \
+              --min_price {min_price} \
+              --max_price {max_price}

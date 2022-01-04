@@ -77,10 +77,24 @@ def go(config: DictConfig):
             )
 
         if "data_check" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+            # Preprocess the raw data and upload the updated data to W&B
+            _ = mlflow.run(
+                os.path.join(root_path, 'src', 'data_check'),
+                "main",
+                parameters={
+                    "csv": config["etl"]["preprocessed_artifact_name"] + ":latest",
+                    "ref": config["etl"]["preprocessed_artifact_name"] + ":reference",
+                    "kl_threshold": config["data_check"]["kl_threshold"],
+                    "lowest_latitude": config["data_check"]["boundaries"]["lowest_latitude"],
+                    "highest_latitude": config["data_check"]["boundaries"]["highest_latitude"],
+                    "lowest_longitude": config["data_check"]["boundaries"]["lowest_longitude"],
+                    "highest_longitude": config["data_check"]["boundaries"]["highest_longitude"],
+                    "min_row_count": config["data_check"]["min_row_count"],
+                    "max_row_count": config["data_check"]["max_row_count"],
+                    "min_price": config["etl"]["min_price"],
+                    "max_price": config["etl"]["max_price"]
+                },
+            )
 
         if "data_split" in active_steps:
             ##################

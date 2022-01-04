@@ -1,50 +1,51 @@
+import logging
+
 import pandas as pd
 import numpy as np
 import scipy.stats
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
+logger = logging.getLogger()
 
-def test_column_names(data):
+def test_column_names(data: pd.DataFrame, ref_data: pd.DataFrame):
 
-    expected_colums = [
-        "id",
-        "name",
-        "host_id",
-        "host_name",
-        "neighbourhood_group",
-        "neighbourhood",
-        "latitude",
-        "longitude",
-        "room_type",
-        "price",
-        "minimum_nights",
-        "number_of_reviews",
-        "last_review",
-        "reviews_per_month",
-        "calculated_host_listings_count",
-        "availability_365",
-    ]
+    these_columns = list(data.columns.values)
 
-    these_columns = data.columns.values
+    ref_columns = list(ref_data.columns.values)
 
-    # This also enforces the same order
-    assert list(expected_colums) == list(these_columns)
+    # raise error if new dataset doesn't have all reference columns
+    for col in ref_columns:
+        assert col in these_columns, f'column {col} not found in the new data'
+
+    # give a warning if the new dataset has an unknown column
+    for col in these_columns:
+        if not col in ref_columns:
+            logger.warning(f'found new column {col} in the new dataset')
 
 
-def test_neighborhood_names(data):
+def test_neighborhood_names(data: pd.DataFrame, ref_data: pd.DataFrame):
 
-    known_names = ["Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"]
+    known_neighs = list(ref_data['neighbourhood_group'].unique())
 
-    neigh = set(data['neighbourhood_group'].unique())
+    neighs = list(data['neighbourhood_group'].unique())
 
-    # Unordered check
-    assert set(known_names) == set(neigh)
+    # raise error if new dataset has an unknown neighborhood group
+    for neigh in neighs:
+        assert neigh in known_neighs, f'neighborhood group "{neigh}" unknown'
 
 
-def test_proper_boundaries(data: pd.DataFrame):
+def test_proper_boundaries(
+    data: pd.DataFrame, 
+    lowest_latitude: float,
+    highest_latitude: float,
+    lowest_longitude: float,
+    highest_longitude: float,
+):
     """
     Test proper longitude and latitude boundaries for properties in and around NYC
     """
-    idx = data['longitude'].between(-74.25, -73.50) & data['latitude'].between(40.5, 41.2)
+    idx = data['longitude'].between(lowest_longitude, highest_longitude) \
+        & data['latitude'].between(lowest_latitude, highest_latitude)
 
     assert np.sum(~idx) == 0
 
@@ -60,6 +61,18 @@ def test_similar_neigh_distrib(data: pd.DataFrame, ref_data: pd.DataFrame, kl_th
     assert scipy.stats.entropy(dist1, dist2, base=2) < kl_threshold
 
 
-########################################################
-# Implement here test_row_count and test_price_range   #
-########################################################
+def test_row_count(data: pd.DataFrame, min_row_count: float, max_row_count: float):
+    """
+    Check that the dataset is not too small or too large
+    """
+    row_count = data.shape[0]
+
+    assert min_row_count < row_count < max_row_count, 'the dataset is too large or too small'
+
+
+def test_price_range(data: pd.DataFrame, min_price: float, max_price: float):
+    """
+    Check that the dataset is not too small or too large
+    """
+
+    assert data['price'].between(min_price, max_price).all(), 'there are rows with price outside the defined boundaries'

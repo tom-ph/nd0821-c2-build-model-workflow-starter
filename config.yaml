@@ -13,6 +13,13 @@ etl:
   max_price: 350  # dollars
 data_check:
   kl_threshold: 0.2
+  min_row_count: 15000
+  max_row_count: 1000000
+  boundaries:
+    lowest_latitude: 40.5
+    highest_latitude: 41.2
+    lowest_longitude: -74.25
+    highest_longitude: -73.50
 modeling:
   # Fraction of data to use for test (the remaining will be used for train and validation)
   test_size: 0.2
