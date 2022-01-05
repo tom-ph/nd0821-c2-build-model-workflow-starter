@@ -144,7 +144,7 @@ def go(config: DictConfig):
                 "main",
                 parameters={
                     "mlflow_model": config["modeling"]["model_artifact_name"] + ":prod",
-                    "test_dataset": "trainval_data.csv:latest"
+                    "test_dataset": "test_data.csv:latest"
                 },
             )
 
