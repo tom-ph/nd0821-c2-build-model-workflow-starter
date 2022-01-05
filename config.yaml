@@ -31,7 +31,10 @@ modeling:
   stratify_by: "neighbourhood_group"
   # Maximum number of features to consider for the TFIDF applied to the title of the
   # insertion (the column called "name")
-  max_tfidf_features: 5
+  max_tfidf_features: 10
+  # The imputation strategy for the availability_365 feature.
+  # Possible values: none, median, iterative, knn
+  availability_imputation_strategy: "iterative"
   # NOTE: you can put here any parameter that is accepted by the constructor of
   # RandomForestRegressor. This is a subsample, but more could be added:
   random_forest:
@@ -45,3 +48,4 @@ modeling:
     max_features: 0.5
     # DO not change the following
     oob_score: true
+  model_artifact_name: "model_export"
