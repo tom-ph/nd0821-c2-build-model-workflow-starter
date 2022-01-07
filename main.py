@@ -71,6 +71,10 @@ def go(config: DictConfig):
                     "output_artifact": config["etl"]["preprocessed_artifact_name"],
                     "output_type": "preprocessed_data",
                     "output_description": "Input data after preprocessing",
+                    "lowest_latitude": config["data_check"]["boundaries"]["lowest_latitude"],
+                    "highest_latitude": config["data_check"]["boundaries"]["highest_latitude"],
+                    "lowest_longitude": config["data_check"]["boundaries"]["lowest_longitude"],
+                    "highest_longitude": config["data_check"]["boundaries"]["highest_longitude"],
                     "min_price": config["etl"]["min_price"],
                     "max_price": config["etl"]["max_price"]
                 },

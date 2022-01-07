@@ -21,6 +21,22 @@ entry_points:
         description: The description to set for the W&B preprocessed artifact
         type: string
 
+      lowest_latitude:
+        description: The lowest accepted latitude in the dataset
+        type: float
+
+      highest_latitude:
+        description: The highest accepted latitude in the dataset
+        type: float
+
+      lowest_longitude:
+        description: The lowest accepted longitude in the dataset
+        type: float
+
+      highest_longitude:
+        description: The highest accepted longitude in the dataset
+        type: float
+
       min_price:
         description: The minimum price to accept. Houses with lower price will be removed from dataset
         type: float
@@ -31,4 +47,13 @@ entry_points:
 
 
     command: >-
-        python run.py  --input_artifact {input_artifact}  --output_artifact {output_artifact}  --output_type {output_type}  --output_description {output_description}  --min_price {min_price}  --max_price {max_price} 
+        python run.py  --input_artifact {input_artifact}  \
+                      --output_artifact {output_artifact}  \
+                      --output_type {output_type}  \
+                      --output_description {output_description}  \
+                      --lowest_latitude {lowest_latitude} \
+                      --highest_latitude {highest_latitude} \
+                      --lowest_longitude {lowest_longitude} \
+                      --highest_longitude {highest_longitude} \
+                      --min_price {min_price}  \
+                      --max_price {max_price} 

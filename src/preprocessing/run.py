@@ -32,6 +32,10 @@ def go(args):
     max_price = args.max_price
     idx = raw_data_df['price'].between(min_price, max_price)
     prep_data_df = raw_data_df[idx].copy()
+    # Drop latitude and longitude outside ranges
+    idx = prep_data_df['longitude'].between(args.lowest_longitude, args.highest_longitude) \
+        & prep_data_df['latitude'].between(args.lowest_latitude, args.highest_latitude)
+    prep_data_df = prep_data_df[idx].copy()
     logger.info(f'there are {prep_data_df.shape[0]} records after preprocessing')
     # Convert last_review to datetime
     prep_data_df['last_review'] = pd.to_datetime(prep_data_df['last_review'])
@@ -80,6 +84,23 @@ if __name__ == "__main__":
         type=str,
         help="The description to set for the W&B preprocessed artifact",
         required=True
+    )
+
+    parser.add_argument(
+        "--lowest_latitude",
+        type=float
+    )
+    parser.add_argument(
+        "--highest_latitude",
+        type=float
+    )
+    parser.add_argument(
+        "--lowest_longitude",
+        type=float
+    )
+    parser.add_argument(
+        "--highest_longitude",
+        type=float
     )
 
     parser.add_argument(
